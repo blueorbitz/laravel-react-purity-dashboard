@@ -1,0 +1,47 @@
+name: Generate a build and push to another branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Push
+    steps:
+      - name: git-checkout
+        uses: actions/checkout@v4
+
+      - name: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+
+      - name: setup-node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: install-dependencies
+        working-directory: ./react-ui
+        run: yarn
+
+      - name: Build
+        working-directory: ./react-ui
+        run: yarn deploy
+
+      - name: configure-deploy-directory
+        run: |
+          mkdir deploy
+          mv react-ui/build deploy/react-ui
+          mv laravel-api deploy/laravel-api
+
+      - name: Push
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: build # The branch name where you want to push the assets
+          FOLDER: deploy # The directory where your assets are generated
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
+          MESSAGE: "Build: ({sha}) {msg}" # The commit message
