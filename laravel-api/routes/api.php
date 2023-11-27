@@ -18,6 +18,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', function(Request $request) {
+    return 'hi root';
+});
+
+Route::get('/greeting', function(Request $request) {
+    return 'hi greeting';
+});
+
 Route::post('/users/register', RegisterController::class)->name('register');
 Route::post('/users/login', LoginController::class)->name('login');
 Route::post('/users/logout', LogoutController::class)->name('logout');
