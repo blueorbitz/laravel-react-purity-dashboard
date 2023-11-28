@@ -40,11 +40,16 @@ jobs:
       - name: configure-deploy-directory
         run: |
           mkdir deploy
+          # deploy laravel as root
           mv laravel-api/* deploy
+          # replace to index.php for webserver to detect
           mv deploy/server.php deploy/index.php
+          # address htaccess issue
           cp deploy/public/.htaccess deploy
+          # rename index.html to blade using web view resource
           mv react-ui/build deploy/client
           mv deploy/client/index.html deploy/resources/views/app.blade.php
+          # static file using public url defined by the build steps
           mv deploy/client/* deploy/public
 
       - name: push-to-special-branch
