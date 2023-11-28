@@ -13,11 +13,6 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v4
 
-      # - name: setup-python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.10' 
-
       - name: setup-node
         uses: actions/setup-node@v3
         with:
@@ -39,13 +34,18 @@ jobs:
       - name: build-react
         working-directory: ./react-ui
         run: yarn deploy
+        env:
+          PUBLIC_URL: '/public'
 
       - name: configure-deploy-directory
         run: |
           mkdir deploy
           mv laravel-api/* deploy
           mv deploy/server.php deploy/index.php
+          cp deploy/public/.htaccess deploy
           mv react-ui/build deploy/client
+          mv deploy/client/index.html deploy/resources/views/app.blade.php
+          mv deploy/client/* deploy/public
 
       - name: push-to-special-branch
         uses: s0/git-publish-subdir-action@develop
